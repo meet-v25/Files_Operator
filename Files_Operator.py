@@ -10,17 +10,21 @@ def imshow(img,*args): # -> null
     if(type(img)==list): 
         for i in img: cv2.imshow(title,i); cv2.waitKey(0); cv2.destroyAllWindows(); 
     else: cv2.imshow(title,img); cv2.waitKey(0); cv2.destroyAllWindows(); 
-
 def show_Channels(i1): # -> (R,G,B)
         i2 = i1.copy(); i2[:,:,0]=0; i2[:,:,1]=0; # Show R 
         i3 = i1.copy(); i3[:,:,0]=0; i3[:,:,2]=0; # Show G 
         i4 = i1.copy(); i4[:,:,1]=0; i4[:,:,2]=0; # Show B 
         imshow([i2,i3,i4]); 
         return i2,i3,i4; 
-
 def shp(img): # -> (h,w,c)
     s=img.shape; print(s); return s; 
-
+def get_path_parts(s): # -> folder_path,img_name,ext_with_dot
+    end=len(s); i=end-1; 
+    while(i>0 and s[i]!="."): i-=1; 
+    ext_with_dot = s[i:end]; end=i; 
+    while(i>0 and s[i]!="\\"): i-=1; 
+    img_name = s[i+1:end]; folder_path = s[:i]; 
+    return folder_path,img_name,ext_with_dot; 
 def helper_new(): pass
 
 
@@ -52,6 +56,38 @@ def Crop_Img(pathh,coords):
     print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
     print(f"{nfile} number of files have been cropped and store in a new folder there."); 
     print(f"________________________________________________________________________________________"); 
+
+########################################################################################################################
+
+def File_Rename_1(pathh): # Format : Str1{n}Str2 
+    s1 = input("Enter Str1 : "); 
+    s2 = input("Enter Str2 : "); 
+    st = int(input("Enter starting index for 1st file : ")); 
+    p0 = input("Numbers {n} are by-default preceded by zero, eg:014. Do you want to remove it? 0/1/y : "); D=0; 
+    if(p0 not in ["y","0","1"]): D = int(input("How many total digits should there be in {n} ? : ")); 
+    cnt=0; n=st; 
+
+    if(D==0):
+        for filename in os.listdir(pathh):
+            if(os.path.isfile(os.path.join(pathh,filename))):
+                old_name=filename; new_name = s1 + str(n) + s2; n+=1; 
+                os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); cnt+=1; 
+    else:
+        for filename in os.listdir(pathh):
+            if(os.path.isfile(os.path.join(pathh,filename))):
+                old_name = filename; old_path = os.path.join(pathh,old_name); 
+                folder_path,img_name,ext = get_path_parts(old_path); 
+                new_name = s1 + ("0")*(D-len(str(n))) + str(n) + s2 + ext; n+=1; 
+                os.rename(old_path,os.path.join(pathh,new_name)); cnt+=1; 
+    
+    print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
+    print(f" {cnt} files have been formatted. "); 
+    print(f"________________________________________________________________________________________"); 
+
+def File_Rename_2(pathh): pass
+def File_Rename_3(pathh): pass
+def File_Rename_4(pathh): pass
+def File_Rename_5(pathh): pass
 
 ########################################################################################################################
 
@@ -99,8 +135,6 @@ def new_fn():pass
 
 
 
-
-
 ########################################################################################################################
 ################################################## MAIN LOOPING CODE ###################################################
 ########################################################################################################################
@@ -129,7 +163,12 @@ while(1):
             Crop_Img(pathh=pathh, coords=(x1,w,y1,h)); 
         
         case 2:
-            input("This operation is yet to be implemented. Please try any other option(s). Press Enter to continue."); 
+            print(); 
+            print("1. Format : Str1{n}Str2 "); 
+            choiice = int(input(f"\nEnter Your Choice Index Here : ")); 
+            if(not(1<=choice<=1)): input("Invalid choice. Press Enter and try again."); continue; 
+            pathh = input(f"Copy-paste path of the folder here : ").strip(); print(""); 
+            [File_Rename_1,File_Rename_2,File_Rename_3,File_Rename_4,File_Rename_5][choiice-1](pathh=pathh); 
         
         case 3:
             folder_pathh = input(f"Copy paste path of the folder in which image is here : ").strip(); 
