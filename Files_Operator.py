@@ -84,7 +84,33 @@ def File_Rename_1(pathh): # Format : Str1{n}Str2
     print(f" {cnt} files have been formatted. "); 
     print(f"________________________________________________________________________________________"); 
 
-def File_Rename_2(pathh): pass
+def File_Rename_2(pathh): # Change N_th SubStr1 to SubStr2 
+    renamed = unrenamed = 0 ; 
+    s1 = input("Enter sub-string_1 : "); 
+    s2 = input("Enter sub-string_2 : "); 
+    n = int("0"+input("Enter N (N_th occurece) : ")); 
+    l1=len(s1); nn=n; print(); 
+    if(n==0): n=nn=1; 
+
+    for filename in os.listdir(pathh):
+        if(os.path.isfile(os.path.join(pathh,filename))):
+            s=filename; old_name=filename; l=len(filename); i=0; n=nn; 
+            while(i<(l-l1)):
+                f=0; 
+                for j in range(l1):
+                    if(s[i+j]!=s1[j]): f=1; break; 
+                if(f==0): n-=1; 
+                if(n==0): break; 
+                i+=1; 
+            if(n>0): print(f"No modifications done for the file : -->> {filename} <<-- , as {nn}_th is larger to have a substring : -> {s1} <- . "); unrenamed+=1; 
+            else:
+                new_name = old_name[:i] + s2 + old_name[i+l1:] ; 
+                os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); renamed+=1; 
+    
+    print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
+    print(f" {renamed} files have been renamed, while {unrenamed} files are as it is, not renamed.  "); 
+    print(f"________________________________________________________________________________________"); 
+
 def File_Rename_3(pathh): pass
 def File_Rename_4(pathh): pass
 def File_Rename_5(pathh): pass
@@ -165,8 +191,9 @@ while(1):
         case 2:
             print(); 
             print("1. Format : Str1{n}Str2 "); 
+            print("2. Change Nth occurence of SubStr1 to SubStr2 "); 
             choiice = int(input(f"\nEnter Your Choice Index Here : ")); 
-            if(not(1<=choice<=1)): input("Invalid choice. Press Enter and try again."); continue; 
+            if(not(1<=choice<=2)): input("Invalid choice. Press Enter and try again."); continue; 
             pathh = input(f"Copy-paste path of the folder here : ").strip(); print(""); 
             [File_Rename_1,File_Rename_2,File_Rename_3,File_Rename_4,File_Rename_5][choiice-1](pathh=pathh); 
         
