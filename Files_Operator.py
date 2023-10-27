@@ -111,7 +111,20 @@ def File_Rename_2(pathh): # Change N_th SubStr1 to SubStr2
     print(f" {renamed} files have been renamed, while {unrenamed} files are as it is, not renamed.  "); 
     print(f"________________________________________________________________________________________"); 
 
-def File_Rename_3(pathh): pass
+def File_Rename_3(pathh): # Insert SubStr at x_th position
+    sstr = input("Enter SubStr to be inserted : "); 
+    x_i = int(input("Enter position at which to be inserted : "))-1; 
+    cnt = 0; 
+    
+    for filename in os.listdir(pathh):
+        if(os.path.isfile(os.path.join(pathh,filename))):
+            old_name=filename; new_name=old_name[:x_i] + sstr + old_name[x_i:]; 
+            os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); cnt+=1; 
+    
+    print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
+    print(f" {cnt} files have been renamed."); 
+    print(f"________________________________________________________________________________________"); 
+
 def File_Rename_4(pathh): pass
 def File_Rename_5(pathh): pass
 
@@ -192,8 +205,9 @@ while(1):
             print(); 
             print("1. Format : Str1{n}Str2 "); 
             print("2. Change Nth occurence of SubStr1 to SubStr2 "); 
+            print("3. Insert SubStr at X_th position "); 
             choiice = int(input(f"\nEnter Your Choice Index Here : ")); 
-            if(not(1<=choice<=2)): input("Invalid choice. Press Enter and try again."); continue; 
+            if(not(1<=choice<=3)): input("Invalid choice. Press Enter and try again."); continue; 
             pathh = input(f"Copy-paste path of the folder here : ").strip(); print(""); 
             [File_Rename_1,File_Rename_2,File_Rename_3,File_Rename_4,File_Rename_5][choiice-1](pathh=pathh); 
         
