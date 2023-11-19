@@ -111,15 +111,23 @@ def File_Rename_2(pathh): # Change N_th SubStr1 to SubStr2
     print(f" {renamed} files have been renamed, while {unrenamed} files are as it is, not renamed.  "); 
     print(f"________________________________________________________________________________________"); 
 
-def File_Rename_3(pathh): # Insert SubStr at x_th position
+def File_Rename_3(pathh): # Insert SubStr at x_th position (from front or last)
+    last = input("Do you want to insert it from the last? 0/1/y : "); 
     sstr = input("Enter SubStr to be inserted : "); 
     x_i = int(input("Enter position at which to be inserted : "))-1; 
     cnt = 0; 
-    
-    for filename in os.listdir(pathh):
-        if(os.path.isfile(os.path.join(pathh,filename))):
-            old_name=filename; new_name=old_name[:x_i] + sstr + old_name[x_i:]; 
-            os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); cnt+=1; 
+
+    if(last in ["y","0","1"]):
+        for filename in os.listdir(pathh):
+            if(os.path.isfile(os.path.join(pathh,filename))):
+                if(x_i==0): old_name=filename; new_name=old_name+sstr; 
+                else: old_name=filename; l=len(old_name); new_name=old_name[:l-x_i] + sstr + old_name[l-x_i:]; 
+                os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); cnt+=1; 
+    else:
+        for filename in os.listdir(pathh):
+            if(os.path.isfile(os.path.join(pathh,filename))):
+                old_name=filename; new_name=old_name[:x_i] + sstr + old_name[x_i:]; 
+                os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); cnt+=1; 
     
     print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
     print(f" {cnt} files have been renamed."); 
