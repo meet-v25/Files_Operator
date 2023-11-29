@@ -133,7 +133,23 @@ def File_Rename_3(pathh): # Insert SubStr at x_th position (from front or last)
     print(f" {cnt} files have been renamed."); 
     print(f"________________________________________________________________________________________"); 
 
-def File_Rename_4(pathh): pass
+def File_Rename_4(pathh): # Remove SubStr from x_th position
+    sstr = input("Enter SubStr to be removed : "); m=len(sstr); 
+    x_i = (int(input("Enter position from which to be removed : ")))-1; 
+    renamed = unrenamed = 0; print(""); 
+
+    for filename in os.listdir(pathh):
+        if(os.path.isfile(os.path.join(pathh,filename))):
+            old_name=filename; n=len(old_name); stri=old_name[x_i:x_i+m]; 
+            if(stri==sstr): 
+                new_name=old_name[:x_i]+old_name[x_i+m:]; 
+                os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); renamed+=1; 
+            else: print(f"No modifications done for the file : -->> {filename} <<-- , as -> {sstr} <- not found at {x_i} index. "); unrenamed+=1; 
+    
+    print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
+    print(f" {renamed} files have been renamed, while {unrenamed} files are as it is, not renamed.  "); 
+    print(f"________________________________________________________________________________________"); 
+
 def File_Rename_5(pathh): pass
 
 ########################################################################################################################
@@ -214,8 +230,9 @@ while(1):
             print("1. Format : Str1{n}Str2 "); 
             print("2. Change Nth occurence of SubStr1 to SubStr2 "); 
             print("3. Insert SubStr at X_th position "); 
+            print("4. Remove SubStr at X_th position "); 
             choiice = int(input(f"\nEnter Your Choice Index Here : ")); 
-            if(not(1<=choice<=3)): input("Invalid choice. Press Enter and try again."); continue; 
+            if(not(1<=choice<=4)): input("Invalid choice. Press Enter and try again."); continue; 
             pathh = input(f"Copy-paste path of the folder here : ").strip(); print(""); 
             [File_Rename_1,File_Rename_2,File_Rename_3,File_Rename_4,File_Rename_5][choiice-1](pathh=pathh); 
         
