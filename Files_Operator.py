@@ -133,18 +133,28 @@ def File_Rename_3(pathh): # Insert SubStr at x_th position (from front or last)
     print(f" {cnt} files have been renamed."); 
     print(f"________________________________________________________________________________________"); 
 
-def File_Rename_4(pathh): # Remove SubStr from x_th position
+def File_Rename_4(pathh): # Remove SubStr from x_th position (from front or last)
+    last = input("Do you want to remove it from the last? 0/1/y : "); 
     sstr = input("Enter SubStr to be removed : "); m=len(sstr); 
-    x_i = (int(input("Enter position from which to be removed : ")))-1; 
+    x_i = ((last not in ['0','1','y'])*(int(input("Enter position from which to be removed : "))))-1; 
     renamed = unrenamed = 0; print(""); 
 
-    for filename in os.listdir(pathh):
-        if(os.path.isfile(os.path.join(pathh,filename))):
-            old_name=filename; n=len(old_name); stri=old_name[x_i:x_i+m]; 
-            if(stri==sstr): 
-                new_name=old_name[:x_i]+old_name[x_i+m:]; 
-                os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); renamed+=1; 
-            else: print(f"No modifications done for the file : -->> {filename} <<-- , as -> {sstr} <- not found at {x_i} index. "); unrenamed+=1; 
+    if(last in ["y","0","1"]):
+        for filename in os.listdir(pathh):
+            if(os.path.isfile(os.path.join(pathh,filename))):
+                old_name=filename; n=len(old_name); endi=n-x_i; stri=old_name[endi-m-1:endi]; 
+                if(stri==sstr): 
+                    new_name=old_name[:endi-m-1]+old_name[endi:]; 
+                    os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); renamed+=1; 
+                else: print(f"No modifications done for the file : -->> {filename} <<-- , as -> {sstr} <- not found at {x_i} index {'from the last'*(last in ['0','1','y'])} . "); unrenamed+=1; 
+    else:
+        for filename in os.listdir(pathh):
+            if(os.path.isfile(os.path.join(pathh,filename))):
+                old_name=filename; n=len(old_name); stri=old_name[x_i:x_i+m]; 
+                if(stri==sstr): 
+                    new_name=old_name[:x_i]+old_name[x_i+m:]; 
+                    os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); renamed+=1; 
+                else: print(f"No modifications done for the file : -->> {filename} <<-- , as -> {sstr} <- not found at {x_i} index {'from the last'*(last in ['0','1','y'])} . "); unrenamed+=1; 
     
     print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
     print(f" {renamed} files have been renamed, while {unrenamed} files are as it is, not renamed.  "); 
