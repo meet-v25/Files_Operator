@@ -160,7 +160,20 @@ def File_Rename_4(pathh): # Remove SubStr from x_th position (from front or last
     print(f" {renamed} files have been renamed, while {unrenamed} files are as it is, not renamed.  "); 
     print(f"________________________________________________________________________________________"); 
 
-def File_Rename_5(pathh): pass
+def File_Rename_5(pathh): # Change Char at position X_th to Char_dash
+    x_i = int(input("Enter position index X_th (eg. Any char at 25th pos...) : "))-1; 
+    chr = input("Enter Char_dash (eg. ...should be changed to # char) : "); 
+    renamed = unrenamed = 0; print(); 
+
+    for filename in os.listdir(pathh):
+        if(os.path.isfile(os.path.join(pathh,filename))):
+            old_name=filename; new_name=old_name[:x_i] + chr + old_name[x_i+1:]; 
+            if(old_name[x_i]==chr): unrenamed+=1; print(f"-->> {filename} already has {chr} at {x_i} position. "); 
+            else: os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); renamed+=1; 
+    
+    print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
+    print(f" {renamed} files have been renamed, while {unrenamed} files already had {chr} at {x_i}th position. "); 
+    print(f"________________________________________________________________________________________"); 
 
 ########################################################################################################################
 
@@ -241,6 +254,7 @@ while(1):
             print("2. Change Nth occurence of SubStr1 to SubStr2 "); 
             print("3. Insert SubStr at X_th position "); 
             print("4. Remove SubStr at X_th position "); 
+            print("5. Change Char at X_th position "); 
             choiice = int(input(f"\nEnter Your Choice Index Here : ")); 
             if(not(1<=choice<=4)): input("Invalid choice. Press Enter and try again."); continue; 
             pathh = input(f"Copy-paste path of the folder here : ").strip(); print(""); 
