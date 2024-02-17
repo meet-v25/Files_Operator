@@ -1,8 +1,16 @@
-import os, cv2, numpy as np, numpy.linalg as npLA
+########################################################################################################################
+import os, cv2, numpy as np, numpy.linalg as npLA, pandas as pd
 from shutil import rmtree
-
 ########################################################################################################################
 ################################################### HELPER FUNCTIONS ###################################################
+########################################################################################################################
+def partite_pixels(img,limit): 
+    i2=img.copy(); i2=i2*((i2-(i2%limit))//limit); i1=img.copy()-i2; imshow([i1,i2]); return i1,i2; # i1=PixelValuesLessThanLimit
+def shift_by_delta(img,delta): 
+    i1,i2=(img.copy()+delta),(img.copy()-delta); imshow([i1,i2]); return i1,i2; # (i1+delta),(i1-delta)
+def shift_channels(img): 
+    i1=img.copy(); i1[:,:,0],i1[:,:,1],i1[:,:,2] = img[:,:,1],img[:,:,2],img[:,:,0]; 
+    i2=img.copy(); i2[:,:,0],i2[:,:,1],i2[:,:,2] = img[:,:,2],img[:,:,0],img[:,:,1]; imshow([i1,i2]); return i1,i2; 
 ########################################################################################################################
 def imshow(img,*args): # -> null
     if(len(args)==0): title="image"; 
@@ -18,15 +26,15 @@ def show_Channels(i1): # -> (R,G,B)
         return i2,i3,i4; 
 def shp(img): # -> (h,w,c)
     s=img.shape; print(s); return s; 
-def get_path_parts(s): # -> folder_path,img_name,ext_with_dot
+def get_path_parts(s): # -> (folder_path,img_name,ext_with_dot)
     end=len(s); i=end-1; 
     while(i>0 and s[i]!="."): i-=1; 
     ext_with_dot = s[i:end]; end=i; 
     while(i>0 and s[i]!="\\"): i-=1; 
     img_name = s[i+1:end]; folder_path = s[:i]; 
     return folder_path,img_name,ext_with_dot; 
+########################################################################################################################
 def helper_new(): pass
-
 
 ########################################################################################################################
 ############################################### NEW OPERATOR FUNCTIONS #################################################
