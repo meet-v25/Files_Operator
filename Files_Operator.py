@@ -70,12 +70,12 @@ def Crop_Img(pathh,coords):
 def File_Rename_1(pathh): # Format : Str1{n}Str2 
     s1 = input("Enter Str1 : "); 
     s2 = input("Enter Str2 : "); 
-    st = int(input("Enter starting index for 1st file : ")); 
-    p0 = input("Numbers {n} are by-default preceded by zero, eg:014. Do you want to remove it? 0/1/y : "); D=0; 
-    if(p0 not in ["y","0","1"]): D = int(input("How many total digits should there be in {n} ? : ")); 
-    cnt=0; n=st; 
+    st = int('0'+input("Enter starting index for 1st file : ")); 
+    D = int('0'+input("How many total digits should there be in {n} ? : ")); 
+    p0 = input("Should we remove preceding zeros? eg. 07 -> 7 (y/0/1) : "); 
+    cnt=0; n=(st==0)+st; D+=(D==0)*4; print(); 
 
-    if(D==0):
+    if(p0 in ["y","Y","0","1"]):
         for filename in os.listdir(pathh):
             if(os.path.isfile(os.path.join(pathh,filename))):
                 old_name=filename; new_name = s1 + str(n) + s2; n+=1; 
@@ -87,6 +87,7 @@ def File_Rename_1(pathh): # Format : Str1{n}Str2
                 folder_path,img_name,ext = get_path_parts(old_path); 
                 new_name = s1 + ("0")*(D-len(str(n))) + str(n) + s2 + ext; n+=1; 
                 os.rename(old_path,os.path.join(pathh,new_name)); cnt+=1; 
+                print(f"Renamed  >> {old_name} <<  to  >> {new_name} << ."); 
     
     print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
     print(f" {cnt} files have been formatted. "); 
@@ -122,7 +123,7 @@ def File_Rename_2(pathh): # Change N_th SubStr1 to SubStr2
 def File_Rename_3(pathh): # Insert SubStr at x_th position (from front or last)
     last = input("Do you want to insert it from the last? 0/1/y : "); 
     sstr = input("Enter SubStr to be inserted : "); 
-    x_i = int(input("Enter position at which to be inserted : "))-1; 
+    x_i = int(input("Enter position (1 based indexing) at which to be inserted" + " (1=>After Extension, 5,6=>Before Extension)"*(last in ["y","0","1"]) + " : "))-1; 
     cnt = 0; 
 
     if(last in ["y","0","1"]):
@@ -251,7 +252,7 @@ while(1):
             x2 = int('0'+input(f"Enter x2, if you have it (i.e. ending horizontal pixel) ... : ")); 
             w  = int('0'+input(f"Enter w, if you have it (i.e. width=w=x2-x1) .............. : ")); 
             y1 = int('0'+input(f"Enter y1, must enter (i.e. starting verticle pixel) ....... : ")); 
-            y2 = int('0'+input(f"Enter y2, if you have it (i.e. starting verticle pixel) ... : ")); 
+            y2 = int('0'+input(f"Enter y2, if you have it (i.e. ending verticle pixel) ... : ")); 
             h  = int('0'+input(f"Enter h, if you have it (i.e. height=h=y2-y1) ............. : ")); 
             w += (w==0)*(x2-x1); h += (h==0)*(y2-y1); 
             Crop_Img(pathh=pathh, coords=(x1,w,y1,h)); 
@@ -262,10 +263,11 @@ while(1):
             print("2. Change Nth occurence of SubStr1 to SubStr2 "); 
             print("3. Insert SubStr at X_th position "); 
             print("4. Remove SubStr at X_th position "); 
-            print("5. Change Char at X_th position "); 
+            print("5. Change Char at position X_th to Char_dash "); 
             choiice = int(input(f"\nEnter Your Choice Index Here : ")); 
-            if(not(1<=choice<=4)): input("Invalid choice. Press Enter and try again."); continue; 
+            if(not(1<=choice<=5)): input("Invalid choice. Press Enter and try again."); continue; 
             pathh = input(f"Copy-paste path of the folder here : ").strip(); print(""); 
+            if(1-os.path.isdir(pathh)): input("\nFolder does not exist or the path is not of a folder. Press Enter and try again."); continue; 
             [File_Rename_1,File_Rename_2,File_Rename_3,File_Rename_4,File_Rename_5][choiice-1](pathh=pathh); 
         
         case 3:
@@ -279,3 +281,4 @@ while(1):
         
         case 0: break; 
         case _: input("Invalid choice. Press Enter and try again."); 
+
