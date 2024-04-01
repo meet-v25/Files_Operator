@@ -12,29 +12,31 @@ def shift_channels(img):
     i1=img.copy(); i1[:,:,0],i1[:,:,1],i1[:,:,2] = img[:,:,1],img[:,:,2],img[:,:,0]; 
     i2=img.copy(); i2[:,:,0],i2[:,:,1],i2[:,:,2] = img[:,:,2],img[:,:,0],img[:,:,1]; imshow([i1,i2]); return i1,i2; 
 ########################################################################################################################
-def imshow(img,*args): # -> null
+def get_path_parts(s): # -> (folder_path, img_name, dot_ext)
+    end = len(s); i = end-1; 
+    while(i>0 and s[i]!="."): i-=1; 
+    dot_ext = s[i:end]; end=i; 
+    while(i>0 and s[i]!="\\"): i-=1; 
+    img_name = s[i+1:end]; folder_path = s[:i]; 
+    return folder_path, img_name, dot_ext; 
+def shp(img): # -> (img.shape)
+    print(img.shape); return (img.shape); 
+def imshow(img,*args):
     if(len(args)==0): title="image"; 
     else: title=args[0]; 
     if(type(img)==list): 
         for i in img: cv2.imshow(title,i); cv2.waitKey(0); cv2.destroyAllWindows(); 
     else: cv2.imshow(title,img); cv2.waitKey(0); cv2.destroyAllWindows(); 
-def show_Channels(i1): # -> (R,G,B)
-        i2 = i1.copy(); i2[:,:,0]=0; i2[:,:,1]=0; # Show R 
-        i3 = i1.copy(); i3[:,:,0]=0; i3[:,:,2]=0; # Show G 
-        i4 = i1.copy(); i4[:,:,1]=0; i4[:,:,2]=0; # Show B 
-        imshow([i2,i3,i4]); 
-        return i2,i3,i4; 
-def shp(img): # -> (h,w,c)
-    s=img.shape; print(s); return s; 
-def get_path_parts(s): # -> (folder_path,img_name,ext_with_dot)
-    end=len(s); i=end-1; 
-    while(i>0 and s[i]!="."): i-=1; 
-    ext_with_dot = s[i:end]; end=i; 
-    while(i>0 and s[i]!="\\"): i-=1; 
-    img_name = s[i+1:end]; folder_path = s[:i]; 
-    return folder_path,img_name,ext_with_dot; 
-########################################################################################################################
-def helper_new(): pass
+def show_Channels(img):
+        i1 = img.copy(); i1[:,:,0]=i1[:,:,2]; i1[:,:,1]=i1[:,:,2]; imshow(i1,"Channel R"); 
+        i1 = img.copy(); i1[:,:,0]=i1[:,:,1]; i1[:,:,2]=i1[:,:,1]; imshow(i1,"Channel G"); 
+        i1 = img.copy(); i1[:,:,1]=i1[:,:,0]; i1[:,:,2]=i1[:,:,0]; imshow(i1,"Channel B"); 
+def printim(img):
+    if(img[0].flatten()==img[1].flatten() and img[0].flatten()==img[2].flatten() ):
+        print(f"{np.transpose(img.copy(),(2,0,1))[0]}  Identicle ."); 
+        # print(f"{np.transpose(img.copy(),(2,0,1))[0].flatten()}  Identicle ."); 
+    else:
+        for i in range(3): print(np.transpose(img.copy(),(2,0,1))[i].flatten()); print(); 
 
 ########################################################################################################################
 ############################################### NEW OPERATOR FUNCTIONS #################################################
@@ -47,7 +49,7 @@ def Crop_Img(pathh,coords):
         new_folder = new_folder[:12] + num; new_dir = os.path.join(pathh,new_folder); 
     os.mkdir(new_dir); 
     
-    x,w,y,h = coords; x1=x; x2=x1+w; y1=y; y2=y+h; nfile = 0; 
+    x1,x2,w,y1,y2,h = coords; x2+=(x2==0)*(x1+w); y2+=(y2==0)*(y1+h); nfile = 0; 
     
     for filename in os.listdir(pathh):
         if(os.path.isfile(os.path.join(pathh,filename))):
@@ -55,8 +57,8 @@ def Crop_Img(pathh,coords):
                 old_path = os.path.join(pathh, str(filename)); 
                 new_path = os.path.join(new_dir, str(filename)); 
 
-                old_img = cv2.imread(old_path); 
-                new_img = old_img[ y1:y2+1 , x1:x2+1 ]; 
+                old_img = cv2.imread(old_path); H,W,Channels = old_img.shape; 
+                new_img = old_img[ max(0,y1):min(H-1,y2+1) , max(0,x1):min(W-1,x2+1) ]; 
 
                 cv2.imwrite(new_path, new_img); 
                 nfile += 1; 
@@ -254,8 +256,7 @@ while(1):
             y1 = int('0'+input(f"Enter y1, must enter (i.e. starting verticle pixel) ....... : ")); 
             y2 = int('0'+input(f"Enter y2, if you have it (i.e. ending verticle pixel) ... : ")); 
             h  = int('0'+input(f"Enter h, if you have it (i.e. height=h=y2-y1) ............. : ")); 
-            w += (w==0)*(x2-x1); h += (h==0)*(y2-y1); 
-            Crop_Img(pathh=pathh, coords=(x1,w,y1,h)); 
+            Crop_Img(pathh=pathh, coords=(x1,x2,w,y1,y2,h)); 
         
         case 2:
             print(); 
