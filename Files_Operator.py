@@ -236,7 +236,8 @@ def new_fn():pass
 ################################################## MAIN LOOPING CODE ###################################################
 ########################################################################################################################
 
-while(1):
+if(__name__=="__main__"):
+  while(1):
     
     if(1):
         print("\n"*2); 
@@ -249,13 +250,13 @@ while(1):
     match choice:
 
         case 1:
-            pathh = input(f"Copy-paste path of the folder here : ").strip(); 
-            x1 = int('0'+input(f"Enter x1, must enter (i.e. starting horizontal pixel) ..... : ")); 
-            x2 = int('0'+input(f"Enter x2, if you have it (i.e. ending horizontal pixel) ... : ")); 
+            pathh = input(f"Copy-paste path of the folder here : ").strip(); print(); 
+            x1 = int('0'+input(f"Enter x1, must enter (i.e. starting horizontal pixel) ..... : ")); x1 = (x1-1)+(x1==0); 
+            y1 = int('0'+input(f"Enter y1, must enter (i.e. starting verticle pixel) ....... : ")); y1 = (y1-1)+(y1==0); 
             w  = int('0'+input(f"Enter w, if you have it (i.e. width=w=x2-x1) .............. : ")); 
-            y1 = int('0'+input(f"Enter y1, must enter (i.e. starting verticle pixel) ....... : ")); 
-            y2 = int('0'+input(f"Enter y2, if you have it (i.e. ending verticle pixel) ... : ")); 
             h  = int('0'+input(f"Enter h, if you have it (i.e. height=h=y2-y1) ............. : ")); 
+            x2 = int('0'+input(f"Enter x2, if you have it (i.e. ending horizontal pixel) ... : ")); x2 = (x2-1)+(x2==0); 
+            y2 = int('0'+input(f"Enter y2, if you have it (i.e. ending verticle pixel) ..... : ")); y2 = (y2-1)+(y2==0); 
             Crop_Img(pathh=pathh, coords=(x1,x2,w,y1,y2,h)); 
         
         case 2:
@@ -266,9 +267,9 @@ while(1):
             print("4. Remove SubStr at X_th position "); 
             print("5. Change Char at position X_th to Char_dash "); 
             choiice = int(input(f"\nEnter Your Choice Index Here : ")); 
-            if(not(1<=choice<=5)): input("Invalid choice. Press Enter and try again."); continue; 
+            if(not(1<=choice<=5)): input("Invalid choice. Press Enter and try again. "); continue; 
             pathh = input(f"Copy-paste path of the folder here : ").strip(); print(""); 
-            if(1-os.path.isdir(pathh)): input("\nFolder does not exist or the path is not of a folder. Press Enter and try again."); continue; 
+            if(1-os.path.isdir(pathh)): input("\nFolder does not exist or the path is not of a folder. Press Enter and try again. "); continue; 
             [File_Rename_1,File_Rename_2,File_Rename_3,File_Rename_4,File_Rename_5][choiice-1](pathh=pathh); 
         
         case 3:
@@ -281,5 +282,5 @@ while(1):
             Compress_Imgs_in_Folder(pathh=pathh); 
         
         case 0: break; 
-        case _: input("Invalid choice. Press Enter and try again."); 
+        case _: input("Invalid choice. Press Enter and try again. "); 
 
