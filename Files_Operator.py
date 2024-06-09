@@ -12,6 +12,12 @@ def shift_channels(img):
     i1=img.copy(); i1[:,:,0],i1[:,:,1],i1[:,:,2] = img[:,:,1],img[:,:,2],img[:,:,0]; 
     i2=img.copy(); i2[:,:,0],i2[:,:,1],i2[:,:,2] = img[:,:,2],img[:,:,0],img[:,:,1]; imshow([i1,i2]); return i1,i2; 
 ########################################################################################################################
+def get_extension(s): # -> dot_ext
+    flag=0; l=len(s); dot_ext=None; 
+    for i in range(l-1,-1,-1):
+        if(s[i]=="."): dot_ext = s[i:]; flag=1; break; 
+    if(flag==0): print(f"Extension not found for : -->> {s} <<-- ."); raise; 
+    else: return dot_ext; 
 def get_path_parts(s): # -> (folder_path, img_name, dot_ext)
     end = len(s); i = end-1; 
     while(i>0 and s[i]!="."): i-=1; 
@@ -74,10 +80,10 @@ def File_Rename_1(pathh): # Format : Str1{n}Str2
     s2 = input("Enter Str2 : "); 
     st = int('0'+input("Enter starting index for 1st file : ")); 
     D = int('0'+input("How many total digits should there be in {n} ? : ")); 
-    p0 = input("Should we remove preceding zeros? eg. 07 -> 7 (y/0/1) : "); 
+    p0 = input("Should we remove preceding zeros? eg. 07 -> 7 (y/0/1/.) : "); 
     cnt=0; n=(st==0)+st; D+=(D==0)*4; print(); 
 
-    if(p0 in ["y","Y","0","1"]):
+    if(p0 in ["y","Y","0","1","."]):
         for filename in os.listdir(pathh):
             if(os.path.isfile(os.path.join(pathh,filename))):
                 old_name=filename; new_name = s1 + str(n) + s2; n+=1; 
@@ -85,9 +91,8 @@ def File_Rename_1(pathh): # Format : Str1{n}Str2
     else:
         for filename in os.listdir(pathh):
             if(os.path.isfile(os.path.join(pathh,filename))):
-                old_name = filename; old_path = os.path.join(pathh,old_name); 
-                folder_path,img_name,ext = get_path_parts(old_path); 
-                new_name = s1 + ("0")*(D-len(str(n))) + str(n) + s2 + ext; n+=1; 
+                old_name = filename; old_path = os.path.join(pathh,old_name); dot_ext = get_extension(filename); 
+                new_name = s1 + ("0")*(D-len(str(n))) + str(n) + s2 + dot_ext; n+=1; 
                 os.rename(old_path,os.path.join(pathh,new_name)); cnt+=1; 
                 print(f"Renamed  >> {old_name} <<  to  >> {new_name} << ."); 
     
@@ -97,38 +102,62 @@ def File_Rename_1(pathh): # Format : Str1{n}Str2
 
 def File_Rename_2(pathh): # Change N_th SubStr1 to SubStr2 
     renamed = unrenamed = 0 ; 
-    s1 = input("Enter sub-string_1 : "); 
-    s2 = input("Enter sub-string_2 : "); 
-    n = int("0"+input("Enter N (N_th occurece) : ")); 
-    l1=len(s1); nn=n; print(); 
-    if(n==0): n=nn=1; 
+    s1 = input("Enter sub-string_1 : "); l1=len(s1); 
+    s2 = input("Enter sub-string_2 : "); l2=len(s2); 
+    n = input("Enter N(N_th occurece)/'all' : "); 
 
-    for filename in os.listdir(pathh):
-        if(os.path.isfile(os.path.join(pathh,filename))):
-            s=filename; old_name=filename; l=len(filename); i=0; n=nn; 
-            while(i<(l-l1)):
-                f=0; 
-                for j in range(l1):
-                    if(s[i+j]!=s1[j]): f=1; break; 
-                if(f==0): n-=1; 
-                if(n==0): break; 
-                i+=1; 
-            if(n>0): print(f"No modifications done for the file : -->> {filename} <<-- , as {nn}_th is larger to have a substring : -> {s1} <- . "); unrenamed+=1; 
-            else:
-                new_name = old_name[:i] + s2 + old_name[i+l1:] ; 
-                os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); renamed+=1; 
-    
-    print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
-    print(f" {renamed} files have been renamed, while {unrenamed} files are as it is, not renamed.  "); 
-    print(f"________________________________________________________________________________________"); 
+    if(n.lower()!="all"):
+        if(n in ["","0"]): n=1; nn=n; 
+        else: n=int(n); nn=n; 
+
+        for filename in os.listdir(pathh):
+            if(os.path.isfile(os.path.join(pathh,filename))):
+                old_name=filename; s=old_name; l=len(filename); i=0; n=nn; 
+                while(i<(l-l1)):
+                    f=0; 
+                    for j in range(l1):
+                        if(s[i+j]!=s1[j]): f=1; break; 
+                    if(f==0): n-=1;     # f=Flag=0 means the substring matches, and hence n of Nth is reduced by 1
+                    if(n==0): break; 
+                    i+=1; 
+                if(n>0): print(f"No modifications done for the file : -->> {filename} <<-- , as {nn}_th is larger to have a substring : -> {s1} <- . "); unrenamed+=1; 
+                else:
+                    new_name = old_name[:i] + s2 + old_name[i+l1:] ; 
+                    os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); renamed+=1; 
+        
+        print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
+        print(f" {renamed} files have been renamed, while {unrenamed} files are as it is, not renamed.  "); 
+        print(f"________________________________________________________________________________________"); 
+
+    else:   # Replace all substrings, excepting the extension
+        delta_l = (l2-l1); 
+        for filename in os.listdir(pathh):
+            if(os.path.isfile(os.path.join(pathh,filename))):
+
+                dot_ext=get_extension(filename); old_name=filename; s=old_name; 
+                ext_len=len(dot_ext); l=len(filename); cur_loop_lim=(l-l1-ext_len)+1; file_rename_flag=0; i=0; 
+                while(i<cur_loop_lim):
+                    f=0; 
+                    for j in range(l1):
+                        if(s[i+j]!=s1[j]): f=1; break; 
+                    if(f==0): s = s[:i] + s2 + s[i+l1:]; cur_loop_lim+=delta_l; i+=delta_l; file_rename_flag=1; 
+                    i+=1; 
+                new_name = s; 
+                
+                if(file_rename_flag==0): print(f"No modifications done for the file : -->> {filename} <<-- , as it does not have a substring : -> {s1} <- . "); unrenamed+=1; 
+                else: os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); renamed+=1; 
+        
+        print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
+        print(f" {renamed} files have been renamed, while {unrenamed} files are as it is, not renamed.  "); 
+        print(f"________________________________________________________________________________________"); 
 
 def File_Rename_3(pathh): # Insert SubStr at x_th position (from front or last)
-    last = input("Do you want to insert it from the last? 0/1/y : "); 
+    last = input("Do you want to insert it from the last? 0/1/y/. : "); 
     sstr = input("Enter SubStr to be inserted : "); 
     x_i = int(input("Enter position (1 based indexing) at which to be inserted" + " (1=>After Extension, 5,6=>Before Extension)"*(last in ["y","0","1"]) + " : "))-1; 
     cnt = 0; 
 
-    if(last in ["y","0","1"]):
+    if(last in ["y","0","1","."]):
         for filename in os.listdir(pathh):
             if(os.path.isfile(os.path.join(pathh,filename))):
                 if(x_i==0): old_name=filename; new_name=old_name+sstr; 
@@ -145,12 +174,12 @@ def File_Rename_3(pathh): # Insert SubStr at x_th position (from front or last)
     print(f"________________________________________________________________________________________"); 
 
 def File_Rename_4(pathh): # Remove SubStr from x_th position (from front or last)
-    last = input("Do you want to remove it from the last? 0/1/y : "); 
+    last = input("Do you want to remove it from the last? 0/1/y/. : "); 
     sstr = input("Enter SubStr to be removed : "); m=len(sstr); 
-    x_i = ((last not in ['0','1','y'])*(int(input("Enter position from which to be removed : "))))-1; 
+    x_i = ((last not in ["0","1","y","."])*(int(input("Enter position from which to be removed : "))))-1; 
     renamed = unrenamed = 0; print(""); 
 
-    if(last in ["y","0","1"]):
+    if(last in ["y","0","1","."]):
         for filename in os.listdir(pathh):
             if(os.path.isfile(os.path.join(pathh,filename))):
                 old_name=filename; n=len(old_name); endi=n-x_i; stri=old_name[endi-m-1:endi]; 
@@ -262,10 +291,11 @@ if(__name__=="__main__"):
         case 2:
             print(); 
             print("1. Format : Str1{n}Str2 "); 
-            print("2. Change Nth occurence of SubStr1 to SubStr2 "); 
+            print("2. Change Nth/All occurence of SubStr1 to SubStr2 "); 
             print("3. Insert SubStr at X_th position "); 
             print("4. Remove SubStr at X_th position "); 
             print("5. Change Char at position X_th to Char_dash "); 
+            
             choiice = int(input(f"\nEnter Your Choice Index Here : ")); 
             if(not(1<=choice<=5)): input("Invalid choice. Press Enter and try again. "); continue; 
             pathh = input(f"Copy-paste path of the folder here : ").strip(); print(""); 
