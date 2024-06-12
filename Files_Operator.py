@@ -102,28 +102,45 @@ def File_Rename_1(pathh): # Format : Str1{n}Str2
 
 def File_Rename_2(pathh): # Change N_th SubStr1 to SubStr2 
     renamed = unrenamed = 0 ; 
+    last = input("Do you want to change it from the last? 0/1/y/. : "); 
     s1 = input("Enter sub-string_1 : "); l1=len(s1); 
     s2 = input("Enter sub-string_2 : "); l2=len(s2); 
-    n = input("Enter N(N_th occurece)/'all' : "); 
+    n = input("Enter N(N_th occurece)/'all' : "); print(); 
 
     if(n.lower()!="all"):
         if(n in ["","0"]): n=1; nn=n; 
         else: n=int(n); nn=n; 
 
-        for filename in os.listdir(pathh):
-            if(os.path.isfile(os.path.join(pathh,filename))):
-                old_name=filename; s=old_name; l=len(filename); i=0; n=nn; 
-                while(i<(l-l1)):
-                    f=0; 
-                    for j in range(l1):
-                        if(s[i+j]!=s1[j]): f=1; break; 
-                    if(f==0): n-=1;     # f=Flag=0 means the substring matches, and hence n of Nth is reduced by 1
-                    if(n==0): break; 
-                    i+=1; 
-                if(n>0): print(f"No modifications done for the file : -->> {filename} <<-- , as {nn}_th is larger to have a substring : -> {s1} <- . "); unrenamed+=1; 
-                else:
-                    new_name = old_name[:i] + s2 + old_name[i+l1:] ; 
-                    os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); renamed+=1; 
+        if(last in ["y","0","1","."]):
+            for filename in os.listdir(pathh):
+                if(os.path.isfile(os.path.join(pathh,filename))):
+                    old_name=filename; s=old_name; l=len(filename); i=(l-l1); n=nn; 
+                    while(i>=0):
+                        f=0; 
+                        for j in range(l1):
+                            if(s[i+j]!=s1[j]): f=1; break; 
+                        if(f==0): n-=1;     # f=Flag=0 means the substring matches, and hence n of Nth is reduced by 1
+                        if(n==0): break; 
+                        i-=1; 
+                    if(n>0): print(f"No modifications done for the file : -->> {filename} <<-- , as {nn}_th is larger to have a substring :  -> {s1} <-  from last."); unrenamed+=1; 
+                    else:
+                        new_name = old_name[:i] + s2 + old_name[i+l1:] ; 
+                        os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); renamed+=1; 
+        else:
+            for filename in os.listdir(pathh):
+                if(os.path.isfile(os.path.join(pathh,filename))):
+                    old_name=filename; s=old_name; l=len(filename); i=0; n=nn; 
+                    while(i<(l-l1)):
+                        f=0; 
+                        for j in range(l1):
+                            if(s[i+j]!=s1[j]): f=1; break; 
+                        if(f==0): n-=1;     # f=Flag=0 means the substring matches, and hence n of Nth is reduced by 1
+                        if(n==0): break; 
+                        i+=1; 
+                    if(n>0): print(f"No modifications done for the file : -->> {filename} <<-- , as {nn}_th is larger to have a substring : -> {s1} <- . "); unrenamed+=1; 
+                    else:
+                        new_name = old_name[:i] + s2 + old_name[i+l1:] ; 
+                        os.rename(os.path.join(pathh,old_name),os.path.join(pathh,new_name)); renamed+=1; 
         
         print(f"\n'''''''''''''''''''''''''''''''''''''''''Done'''''''''''''''''''''''''''''''''''''''''"); 
         print(f" {renamed} files have been renamed, while {unrenamed} files are as it is, not renamed.  "); 
@@ -204,7 +221,7 @@ def File_Rename_5(pathh): # Change Char at position X_th to Char_dash
     x_i = int(input("Enter position index X_th (eg. Any char at 25th pos...) : "))-1; 
     chr = input("Enter Char_dash (eg. ...should be changed to # char) : "); 
     renamed = unrenamed = 0; print(); 
-
+    
     for filename in os.listdir(pathh):
         if(os.path.isfile(os.path.join(pathh,filename))):
             old_name=filename; new_name=old_name[:x_i] + chr + old_name[x_i+1:]; 
@@ -280,6 +297,7 @@ if(__name__=="__main__"):
 
         case 1:
             pathh = input(f"Copy-paste path of the folder here : ").strip(); print(); 
+            if(1-os.path.isdir(pathh)): input("\nFolder does not exist or the path is not of a folder. Press Enter and try again. "); print(); 
             x1 = int('0'+input(f"Enter x1, must enter (i.e. starting horizontal pixel) ..... : ")); x1 = (x1-1)+(x1==0); 
             y1 = int('0'+input(f"Enter y1, must enter (i.e. starting verticle pixel) ....... : ")); y1 = (y1-1)+(y1==0); 
             w  = int('0'+input(f"Enter w, if you have it (i.e. width=w=x2-x1) .............. : ")); 
@@ -297,18 +315,20 @@ if(__name__=="__main__"):
             print("5. Change Char at position X_th to Char_dash "); 
             
             choiice = int(input(f"\nEnter Your Choice Index Here : ")); 
-            if(not(1<=choice<=5)): input("Invalid choice. Press Enter and try again. "); continue; 
+            if(not(1<=choiice<=5)): input("Invalid choice. Press Enter and try again. "); continue; 
             pathh = input(f"Copy-paste path of the folder here : ").strip(); print(""); 
             if(1-os.path.isdir(pathh)): input("\nFolder does not exist or the path is not of a folder. Press Enter and try again. "); continue; 
             [File_Rename_1,File_Rename_2,File_Rename_3,File_Rename_4,File_Rename_5][choiice-1](pathh=pathh); 
         
         case 3:
-            folder_pathh = input(f"Copy paste path of the folder in which image is here : ").strip(); 
+            pathh = input(f"Copy paste path of the folder in which image is here : ").strip(); 
+            if(1-os.path.isdir(pathh)): input("\nFolder does not exist or the path is not of a folder. Press Enter and try again. "); print(); 
             img_namme = input(f"Copy paste name image here along with extension : ").strip(); 
-            Compress_Single_Img(folder_pathh=folder_pathh, img_namme=img_namme, confirm_text_flag=1); 
+            Compress_Single_Img(folder_pathh=pathh, img_namme=img_namme, confirm_text_flag=1); 
         
         case 4:
             pathh = input(f"Copy paste path of the folder here : ").strip(); 
+            if(1-os.path.isdir(pathh)): input("\nFolder does not exist or the path is not of a folder. Press Enter and try again. "); print(); 
             Compress_Imgs_in_Folder(pathh=pathh); 
         
         case 0: break; 
